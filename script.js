@@ -42,6 +42,7 @@ const prizesCount = document.getElementById('prizes-count');
 const winnersTbody = document.getElementById('winners-tbody');
 const clearWinnersBtn = document.getElementById('clear-winners-btn');
 const resetAllBtn = document.getElementById('reset-all-btn');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 
 const winnerModal = document.getElementById('winner-modal');
 const winnerNameEl = document.getElementById('winner-name');
@@ -183,6 +184,59 @@ resetAllBtn.addEventListener('click', () => {
         winners = [];
         saveState();
     }
+});
+
+exportCsvBtn.addEventListener('click', () => {
+    if (winners.length === 0) {
+        alert("Chưa có danh sách trúng giải để xuất.");
+        return;
+    }
+
+    // Prepare CSV header
+    let allExtraKeys = new Set();
+    winners.forEach(w => {
+        if (w.playerExtraInfo) {
+            Object.keys(w.playerExtraInfo).forEach(k => allExtraKeys.add(k));
+        }
+    });
+    const extraKeysArray = Array.from(allExtraKeys);
+    
+    // Header row
+    let csvHeader = ["Thời Gian", "Người Trúng", "Phần Quà"];
+    if (extraKeysArray.length > 0) {
+        csvHeader = csvHeader.concat(extraKeysArray);
+    }
+    let csvContent = csvHeader.join(",") + "\n";
+
+    // Data rows
+    winners.forEach(w => {
+        let row = [
+            `"${new Date(w.time).toLocaleString('vi-VN')}"`,
+            `"${w.playerName.replace(/"/g, '""')}"`,
+            `"${w.prizeName.replace(/"/g, '""')}"`
+        ];
+        
+        extraKeysArray.forEach(k => {
+            const val = (w.playerExtraInfo && w.playerExtraInfo[k]) !== undefined ? String(w.playerExtraInfo[k]) : "";
+            row.push(`"${val.replace(/"/g, '""')}"`);
+        });
+        
+        csvContent += row.join(",") + "\n";
+    });
+
+    // Add BOM for UTF-8 Excel compatibility
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    
+    // Create download link
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Danh_sach_trung_thuong_${new Date().getTime()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 });
 
 // --- Updating UI routines ---
