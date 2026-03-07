@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng Quay May Mắn - Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Background elements -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <div class="app-container glass-panel">
+        <header>
+            <h1 class="gradient-text">✨ Vòng Quay May Mắn ✨</h1>
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="wheel-tab">Vòng Quay</button>
+                <button class="tab-btn" data-tab="players-tab">Người Chơi</button>
+                <button class="tab-btn" data-tab="prizes-tab">Quà Tặng</button>
+                <button class="tab-btn" data-tab="winners-tab">Giải Thưởng</button>
+            </nav>
+        </header>
+
+        <main class="tab-content">
+            <!-- VÒNG QUAY TAB -->
+            <section id="wheel-tab" class="tab-pane active fade-in">
+                <div class="spin-screen-layout">
+                    <!-- Left Column: Prize Selection -->
+                    <div class="spin-left-panel glass-panel">
+                        <h3 class="panel-subtitle">Hãy chọn giải để quay</h3>
+                        <div class="prize-selection-list" id="prize-selection-list">
+                            <!-- Prizes populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Center Column: Animation Text -->
+                    <div class="spin-center-panel">
+                        <div class="animation-display glass-panel" id="animation-display">
+                            <span class="placeholder-text">SẴN SÀNG</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Spin Button -->
+                    <div class="spin-right-panel">
+                        <button id="spin-btn" class="glow-btn huge-btn">QUAY</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NGƯỜI CHƠI TAB -->
+            <section id="players-tab" class="tab-pane fade-in">
+                <h2>Danh sách người được quay</h2>
+                <div class="input-group">
+                    <label style="color: var(--text-secondary); font-size: 0.9rem;">Nhập thủ công (1 tên mỗi dòng hoặc cách nhau bằng dấu phẩy):</label>
+                    <textarea id="players-input" placeholder="Ví dụ: Nguyễn Văn A, Trần Văn B..." rows="3"></textarea>
+                    <button id="import-players-btn" class="primary-btn">Thêm Thủ Công</button>
+                    
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 0.5rem 0;">
+                    
+                    <label style="color: var(--text-secondary); font-size: 0.9rem;">Hoặc Upload File (Excel, CSV) chứa nhiều cột thông tin. Cột đầu tiên sẽ là Tên, các cột sau là thông tin kèm theo:</label>
+                    <input type="file" id="file-upload" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                </div>
+                <div class="stats">
+                    <p>Tổng số người chơi hiện tại: <span id="players-count" class="highlight">0</span></p>
+                </div>
+                <div class="list-container">
+                    <ul id="players-list" class="glass-list"></ul>
+                </div>
+            </section>
+
+            <!-- QUÀ TẶNG TAB -->
+            <section id="prizes-tab" class="tab-pane fade-in">
+                <h2>Danh sách quà tặng</h2>
+                <div class="input-group flex-group">
+                    <input type="text" id="prize-name" placeholder="Tên món quà...">
+                    <input type="number" id="prize-qty" placeholder="Số lượng" min="1" value="1">
+                    <button id="add-prize-btn" class="primary-btn">Thêm Quà</button>
+                </div>
+                <div class="stats">
+                    <p>Tổng số quà tặng còn lại: <span id="prizes-count" class="highlight">0</span></p>
+                </div>
+                <div class="list-container">
+                    <ul id="prizes-list" class="glass-list"></ul>
+                </div>
+            </section>
+
+            <!-- GIẢI THƯỞNG TAB -->
+            <section id="winners-tab" class="tab-pane fade-in">
+                <h2>Danh sách trúng giải</h2>
+                <div class="actions-group">
+                    <button id="clear-winners-btn" class="danger-btn">Xóa Lịch Sử</button>
+                    <button id="reset-all-btn" class="danger-btn">Reset Toàn Bộ (Mới lại từ đầu)</button>
+                </div>
+                <div class="table-container">
+                    <table id="winners-table">
+                        <thead>
+                            <tr>
+                                <th>Thời Gian</th>
+                                <th>Người Trúng</th>
+                                <th>Thông Tin Kèm Theo</th>
+                                <th>Phần Quà</th>
+                            </tr>
+                        </thead>
+                        <tbody id="winners-tbody">
+                            <!-- Winners will appear here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Winner Modal -->
+    <div id="winner-modal" class="modal hidden">
+        <div class="modal-content glass-panel bounce-in">
+            <h2 class="gradient-text">🎉 CHÚC MỪNG 🎉</h2>
+            <p id="winner-name" class="winner-name-text">Tên Người Trúng</p>
+            <p>Đã nhận được phần quà:</p>
+            <p id="winner-prize" class="winner-prize-text">Tên Quà Tặng</p>
+            <button id="close-modal-btn" class="primary-btn mt-4">Tiếp Tục</button>
+        </div>
+    </div>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
