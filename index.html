@@ -1,133 +1,2496 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vòng Quay May Mắn - Premium</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Year End Party 2025 — Cargill Lucky Draw</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cg-green: #008544;
+    --cg-green-deep: #00582d;
+    --cg-green-darker: #003d1f;
+    --cg-green-light: #00b85e;
+    --cg-green-glow: #4ade80;
+    --cg-lime: #a3e635;
+    --cream: #f0fdf4;
+    --cream-dim: rgba(240, 253, 244, 0.7);
+    --cream-faint: rgba(240, 253, 244, 0.45);
+    --bg-1: #041008;
+    --bg-2: #082014;
+    --bg-panel: #0a2818;
+    --panel: rgba(10, 40, 24, 0.7);
+    --panel-soft: rgba(0, 88, 45, 0.15);
+    --border: rgba(0, 184, 94, 0.22);
+    --border-strong: rgba(0, 184, 94, 0.5);
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0, 184, 94, 0.12) 0%, transparent 70%),
+      radial-gradient(ellipse at 80% 100%, rgba(0, 133, 68, 0.10) 0%, transparent 50%),
+      linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient floating leaves */
+  .ambient {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .ambient span {
+    position: absolute;
+    font-size: 1.4rem;
+    opacity: 0.07;
+    animation: floatUp 25s infinite linear;
+  }
+  @keyframes floatUp {
+    from { transform: translateY(105vh) rotate(0deg); }
+    to { transform: translateY(-15vh) rotate(360deg); }
+  }
+
+  /* ============== APP SHELL ============== */
+  .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ============== TOP NAV ============== */
+  .topnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(4, 16, 8, 0.7);
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0;
+    z-index: 50;
+  }
+  .topnav .brand {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .brand-mark {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--cg-green), var(--cg-green-light));
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+    color: white; font-size: 1.3rem;
+    box-shadow: 0 4px 14px rgba(0, 133, 68, 0.5);
+  }
+  .brand-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--cg-green-light);
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+  }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    padding: 8px 18px;
+    color: var(--cream-dim);
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 6px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .nav-tab:hover { color: var(--cream); }
+  .nav-tab.active { color: var(--cg-green-light); }
+  .nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -17px; left: 18px; right: 18px;
+    height: 2px;
+    background: var(--cg-green-light);
+    border-radius: 2px;
+  }
+  .nav-actions { display: flex; gap: 10px; align-items: center; }
+  .icon-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+  }
+  .icon-btn:hover { border-color: var(--cg-green-light); }
+  .icon-btn.avatar {
+    background: linear-gradient(135deg, var(--cg-green-deep), var(--cg-green));
+    border-color: var(--cg-green-light);
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+
+  /* ============== MAIN LAYOUT (3 columns) ============== */
+  .main-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 380px 1fr 320px;
+    gap: 22px;
+    padding: 24px 32px;
+  }
+  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+  /* ============== PANELS ============== */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    backdrop-filter: blur(10px);
+  }
+  .panel-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .panel-header .h-icon {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    background: var(--cg-green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+  .panel-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--cream);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .panel-header small {
+    display: block;
+    font-family: 'Be Vietnam Pro';
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--cream-faint);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ============== WINNER CIRCLE (LEFT) ============== */
+  .winner-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .winner-filter label {
+    font-size: 0.7rem;
+    color: var(--cg-green-light);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .winner-filter select {
+    width: 100%;
+    background: var(--bg-1);
+    border: 1px solid var(--border-strong);
+    color: var(--cream);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300b85e'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 32px;
+    transition: border-color 0.2s;
+  }
+  .winner-filter select:hover, .winner-filter select:focus {
+    border-color: var(--cg-lime);
+    outline: none;
+  }
+  .winner-filter select option {
+    background: var(--bg-1);
+    color: var(--cream);
+  }
+
+  /* Group header within winners list */
+  .winner-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    margin: 4px 0 2px;
+    background: linear-gradient(90deg, rgba(0, 184, 94, 0.15), rgba(0, 88, 45, 0.05));
+    border-left: 3px solid var(--cg-lime);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--cg-lime);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .winner-group-header .grp-count {
+    background: rgba(0, 0, 0, 0.4);
+    color: var(--cream);
+    padding: 2px 8px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .winner-group-header.first {
+    background: linear-gradient(90deg, rgba(163, 230, 53, 0.2), rgba(0, 184, 94, 0.05));
+    box-shadow: 0 0 12px rgba(163, 230, 53, 0.2);
+  }
+
+  .winners-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .winners-list::-webkit-scrollbar { width: 6px; }
+  .winners-list::-webkit-scrollbar-track { background: transparent; }
+  .winners-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+  .winner-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(0, 88, 45, 0.25);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: all 0.3s;
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideIn 0.5s forwards;
+  }
+  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+  .winner-row.latest {
+    border-color: var(--cg-lime);
+    background: linear-gradient(135deg, rgba(163, 230, 53, 0.12), rgba(0, 184, 94, 0.18));
+    box-shadow: 0 0 18px rgba(163, 230, 53, 0.25);
+  }
+  .winner-stt {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--cg-lime);
+    font-variant-numeric: tabular-nums;
+  }
+  .winner-row.latest .winner-stt {
+    background: var(--cg-green);
+    border-color: var(--cg-lime);
+    color: white;
+  }
+  .winner-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cg-green), var(--cg-green-light));
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 0.8rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .winner-info { flex: 1; min-width: 0; }
+  .winner-info .name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--cream);
+    line-height: 1.25;
+    /* allow wrapping but limit to 1 line to keep compact */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .winner-info .name .winner-id {
+    font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--cg-lime);
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+  .winner-info .prize {
+    font-size: 0.7rem;
+    color: var(--cg-green-light);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 3px;
+    font-weight: 600;
+    /* let prize wrap to next line if long - 2 lines max */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+  }
+  .empty-winners {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--cream-faint);
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+  /* "View Full History" button below winners list, inside left panel */
+  .view-history-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 11px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .view-history-btn:hover {
+    border-color: var(--cg-green-light);
+    background: rgba(0, 184, 94, 0.08);
+  }
+
+  /* ============== CENTER STAGE ============== */
+  .stage {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 660px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage::before {
+    content: '';
+    position: absolute;
+    top: -30%; left: -30%;
+    width: 160%; height: 160%;
+    background: radial-gradient(circle, rgba(0, 184, 94, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    animation: stageGlow 8s ease-in-out infinite alternate;
+  }
+  @keyframes stageGlow {
+    from { transform: translate(0, 0); }
+    to { transform: translate(5%, 5%); }
+  }
+  .stage-head {
+    text-align: center;
+    position: relative; z-index: 2;
+    min-height: 70px;
+  }
+  .stage-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.65rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--cg-green-light), var(--cg-lime), var(--cg-green-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .stage-sub {
+    color: var(--cream-dim);
+    font-size: 0.88rem;
+    min-height: 20px;
+  }
+
+  /* ============== SLOT MACHINE STAGE ============== */
+  .slot-stage {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 16px auto 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  /* Decorative outer frame */
+  .slot-frame {
+    position: relative;
+    width: 100%;
+    background:
+      radial-gradient(ellipse at center, rgba(0, 88, 45, 0.4) 0%, rgba(4, 16, 8, 0.6) 70%),
+      linear-gradient(135deg, rgba(0, 88, 45, 0.3), rgba(0, 0, 0, 0.5));
+    border: 2px solid var(--cg-green-light);
+    border-radius: 22px;
+    padding: 38px 30px;
+    box-shadow:
+      0 0 50px rgba(0, 184, 94, 0.4),
+      inset 0 0 40px rgba(0, 0, 0, 0.4),
+      inset 0 2px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+  .slot-frame.spinning {
+    animation: frameGlow 0.4s ease-in-out infinite alternate;
+  }
+  @keyframes frameGlow {
+    from { box-shadow: 0 0 50px rgba(0, 184, 94, 0.4), inset 0 0 40px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.05); border-color: var(--cg-green-light); }
+    to   { box-shadow: 0 0 90px rgba(163, 230, 53, 0.7), inset 0 0 40px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.05); border-color: var(--cg-lime); }
+  }
+
+  /* Decorative corner accents (4 bi-like dots) */
+  .slot-frame::before,
+  .slot-frame::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--cg-lime), var(--cg-green));
+    box-shadow: 0 0 10px rgba(163, 230, 53, 0.8);
+    z-index: 3;
+  }
+  .slot-frame::before { top: 14px; left: 14px; }
+  .slot-frame::after  { top: 14px; right: 14px; }
+  .slot-corner-bl, .slot-corner-br {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--cg-lime), var(--cg-green));
+    box-shadow: 0 0 10px rgba(163, 230, 53, 0.8);
+    z-index: 3;
+  }
+  .slot-corner-bl { bottom: 14px; left: 14px; }
+  .slot-corner-br { bottom: 14px; right: 14px; }
+
+  /* Slot window - 3 vertical reels visual */
+  .slot-reel {
+    background:
+      repeating-linear-gradient(
+        180deg,
+        rgba(0, 88, 45, 0.25) 0px,
+        rgba(0, 88, 45, 0.25) 2px,
+        transparent 2px,
+        transparent 6px
+      ),
+      linear-gradient(180deg,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 88, 45, 0.4) 30%,
+        rgba(0, 88, 45, 0.4) 70%,
+        rgba(0, 0, 0, 0.7) 100%);
+    border: 2px solid var(--cg-lime);
+    border-radius: 14px;
+    padding: 28px 24px;
+    box-shadow:
+      0 0 30px rgba(163, 230, 53, 0.5),
+      inset 0 0 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+  /* Top/bottom gradient masks to simulate slot reel cylinder */
+  .slot-reel::before, .slot-reel::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 25%;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .slot-reel::before {
+    top: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent);
+  }
+  .slot-reel::after {
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.7), transparent);
+  }
+
+  .slot-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: var(--cream);
+    text-shadow:
+      0 0 24px rgba(163, 230, 53, 0.9),
+      0 0 40px rgba(0, 184, 94, 0.5);
+    line-height: 1.1;
+    word-break: break-word;
+    position: relative;
+    z-index: 3;
+  }
+  .slot-id {
+    font-size: 0.82rem;
+    color: var(--cg-lime);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    position: relative;
+    z-index: 3;
+    min-height: 1em;
+  }
+  /* Fast spinning - blur + jitter */
+  .slot-frame.fast .slot-name {
+    animation: slotJitter 0.035s infinite;
+    filter: blur(0.6px);
+  }
+  .slot-frame.slow .slot-name {
+    animation: slotJitter 0.15s infinite;
+  }
+  @keyframes slotJitter {
+    0%   { transform: translateY(-4px); opacity: 0.65; }
+    50%  { transform: translateY(0);    opacity: 1; }
+    100% { transform: translateY(4px);  opacity: 0.65; }
+  }
+
+  /* Idle / locked state - clean text */
+  .slot-frame.idle .slot-name {
+    background: linear-gradient(135deg, var(--cg-green-light), var(--cg-lime));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ============== SPIN BUTTON ============== */
+  .spin-btn {
+    margin-top: 28px;
+    padding: 18px 80px;
+    background: linear-gradient(135deg, var(--cg-green) 0%, var(--cg-green-light) 50%, var(--cg-lime) 100%);
+    border: none;
+    color: var(--bg-1);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(0, 184, 94, 0.5);
+    transition: all 0.3s;
+    position: relative; z-index: 2;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .spin-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(0, 184, 94, 0.7);
+  }
+  .spin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .live-status {
+    margin-top: 18px;
+    padding: 8px 22px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+    position: relative; z-index: 2;
+  }
+  .live-status .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--cg-lime);
+    animation: livePulse 1.5s infinite;
+  }
+  @keyframes livePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0.8); }
+    50% { box-shadow: 0 0 0 8px rgba(163, 230, 53, 0); }
+  }
+
+  /* ============== PRIZE PANEL (RIGHT) ============== */
+  .prizes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 470px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .prizes-list::-webkit-scrollbar { width: 6px; }
+  .prizes-list::-webkit-scrollbar-track { background: transparent; }
+  .prizes-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+  .prize-item {
+    background: rgba(0, 88, 45, 0.18);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.3s;
+  }
+  .prize-item.selected {
+    border-color: var(--cg-lime);
+    background: linear-gradient(135deg, rgba(163, 230, 53, 0.12), rgba(0, 88, 45, 0.3));
+    box-shadow: 0 0 18px rgba(163, 230, 53, 0.3);
+  }
+  .prize-item.done {
+    opacity: 0.55;
+    background: rgba(0, 0, 0, 0.3);
+  }
+  .prize-row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .prize-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+  .prize-badge {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .prize-badge.remaining {
+    background: rgba(0, 184, 94, 0.18);
+    color: var(--cg-green-light);
+    border: 1px solid var(--border-strong);
+  }
+  .prize-badge.done {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--cream-faint);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .prize-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, var(--cg-green), var(--cg-green-light));
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 1px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .prize-btn:hover:not(:disabled) {
+    box-shadow: 0 4px 14px rgba(0, 184, 94, 0.4);
+    transform: translateY(-1px);
+  }
+  .prize-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--cream-faint);
+  }
+  /* "Xem Thống kê" at bottom of right panel */
+  .stats-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 11px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .stats-btn:hover {
+    border-color: var(--cg-green-light);
+    background: rgba(0, 184, 94, 0.08);
+  }
+
+  /* ============== UPLOAD SCREEN (Improved!) ============== */
+  .upload-screen {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at top, rgba(0, 184, 94, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(0, 88, 45, 0.2) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .upload-screen.hidden { display: none; }
+  .upload-screen .glow-orb {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0, 184, 94, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: orbFloat 8s ease-in-out infinite alternate;
+  }
+  @keyframes orbFloat {
+    from { transform: translate(-10%, -10%); }
+    to { transform: translate(10%, 10%); }
+  }
+
+  .upload-card {
+    max-width: 600px;
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(0, 184, 94, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+  }
+  .upload-card .badge-tag {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--cg-green);
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    border-radius: 50px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 14px rgba(0, 133, 68, 0.5);
+  }
+  .upload-card h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    margin-bottom: 8px;
+    color: var(--cream);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  .upload-card h1 span {
+    background: linear-gradient(135deg, var(--cg-green-light), var(--cg-lime));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .upload-card .subtitle {
+    color: var(--cream-dim);
+    margin-bottom: 36px;
+    font-size: 1rem;
+  }
+
+  /* THE BIG OBVIOUS DROPZONE */
+  .upload-dropzone {
+    display: block;
+    border: 3px dashed var(--cg-green-light);
+    border-radius: 16px;
+    padding: 44px 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background:
+      linear-gradient(135deg, rgba(0, 184, 94, 0.08), rgba(163, 230, 53, 0.04));
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-dropzone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 30%, rgba(163, 230, 53, 0.05) 50%, transparent 70%);
+    background-size: 200% 200%;
+    animation: shimmer 3s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .upload-dropzone:hover {
+    border-color: var(--cg-lime);
+    background: linear-gradient(135deg, rgba(0, 184, 94, 0.15), rgba(163, 230, 53, 0.08));
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(0, 184, 94, 0.3);
+  }
+  .upload-dropzone.dragover {
+    border-color: var(--cg-lime);
+    background: rgba(163, 230, 53, 0.15);
+    transform: scale(1.02);
+  }
+  .upload-dropzone .ico-wrap {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--cg-green), var(--cg-green-light));
+    border-radius: 20px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+    box-shadow: 0 10px 30px rgba(0, 133, 68, 0.4);
+    animation: bob 2.5s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .upload-dropzone .txt {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+  .upload-dropzone .or-text {
+    color: var(--cream-faint);
+    font-size: 0.85rem;
+    margin: 8px 0;
+  }
+  .upload-dropzone .browse-btn {
+    display: inline-block;
+    padding: 10px 28px;
+    background: var(--cg-green);
+    color: white;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-top: 12px;
+    box-shadow: 0 4px 14px rgba(0, 133, 68, 0.4);
+  }
+  .upload-dropzone input { display: none; }
+
+  .upload-requirements {
+    margin-top: 28px;
+    padding: 16px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: left;
+    font-size: 0.82rem;
+  }
+  .upload-requirements .req-title {
+    color: var(--cg-green-light);
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+  .upload-requirements ul {
+    list-style: none;
+    color: var(--cream-dim);
+  }
+  .upload-requirements ul li {
+    padding: 3px 0;
+    padding-left: 22px;
+    position: relative;
+  }
+  .upload-requirements ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--cg-green-light);
+    font-weight: 900;
+  }
+  .upload-requirements code {
+    background: rgba(0, 184, 94, 0.15);
+    color: var(--cg-lime);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.85em;
+  }
+
+  /* ============== BOTTOM FOOTER ============== */
+  .bottom-footer {
+    padding: 16px 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(4, 16, 8, 0.5);
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.82rem;
+    color: var(--cream-faint);
+  }
+  .bottom-footer .left {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .bottom-footer .right {
+    display: flex;
+    gap: 18px;
+  }
+  .bottom-footer b { color: var(--cg-green-light); font-weight: 600; }
+  .footer-link {
+    color: var(--cream-dim);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--cg-green-light); }
+
+  /* ============== MODAL ============== */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    padding: 20px;
+  }
+  .modal-bg.show { display: flex; }
+  .modal-box {
+    background: linear-gradient(135deg, var(--bg-2), var(--bg-1));
+    border: 1px solid var(--cg-green-light);
+    border-radius: 14px;
+    padding: 28px;
+    max-width: 1100px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .modal-box h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--cg-green-light);
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+  }
+  .modal-box p { margin-bottom: 14px; color: var(--cream-dim); line-height: 1.5; }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* History table */
+  .history-table-wrap {
+    overflow-x: auto;
+    max-height: 55vh;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-1);
+  }
+  .history-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+  .history-table th, .history-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    text-align: left;
+    background: var(--bg-1);
+  }
+  .history-table tbody tr:nth-child(even) td {
+    background: rgba(0, 88, 45, 0.08);
+  }
+  .history-table th {
+    background: #0a2818;
+    color: var(--cg-green-light);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    border-bottom: 2px solid var(--cg-green);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+  .history-table tr:hover td { background: rgba(0, 184, 94, 0.12) !important; }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .stat-card {
+    background: rgba(0, 88, 45, 0.2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--cg-green-light);
+    line-height: 1;
+  }
+  .stat-card .lbl {
+    font-size: 0.72rem;
+    color: var(--cream-dim);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .stats-section-title {
+    margin: 24px 0 12px;
+    font-family: 'Playfair Display', serif;
+    color: var(--cg-green-light);
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .stats-section-title .hint {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: var(--cream-faint);
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .stat-card .num .stat-of {
+    font-size: 0.9rem;
+    color: var(--cream-faint);
+    font-weight: 400;
+  }
+
+  /* Filter chip bar */
+  .stats-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    background: rgba(163, 230, 53, 0.08);
+    border: 1px solid var(--cg-lime);
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(163, 230, 53, 0.15);
+  }
+  .stats-filter-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--cg-lime);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .stats-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(163, 230, 53, 0.15);
+    border: 1px solid var(--cg-lime);
+    color: var(--cream);
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .stats-filter-chip:hover {
+    background: rgba(163, 230, 53, 0.25);
+  }
+  .stats-filter-chip .chip-x {
+    color: var(--cg-lime);
+    font-weight: 700;
+    margin-left: 2px;
+  }
+  .stats-clear-all {
+    margin-left: auto;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--cream-faint);
+    color: var(--cream-dim);
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .stats-clear-all:hover {
+    border-color: var(--cg-lime);
+    color: var(--cg-lime);
+  }
+
+  /* Clickable filter rows / cells */
+  .filter-row {
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .filter-row:hover td {
+    background: rgba(163, 230, 53, 0.1) !important;
+  }
+  .filter-row.filter-active td {
+    background: rgba(163, 230, 53, 0.18) !important;
+    box-shadow: inset 3px 0 0 var(--cg-lime);
+  }
+  .filter-row.filter-active td:first-child {
+    color: var(--cg-lime) !important;
+  }
+  .filter-th {
+    transition: background 0.15s;
+  }
+  .filter-th:hover {
+    background: rgba(163, 230, 53, 0.18) !important;
+  }
+  .filter-th.filter-active {
+    background: rgba(163, 230, 53, 0.25) !important;
+    color: var(--cg-lime) !important;
+    box-shadow: inset 0 -3px 0 var(--cg-lime);
+  }
+  .filter-cell {
+    transition: background 0.15s;
+  }
+  .filter-cell:hover {
+    background: rgba(163, 230, 53, 0.18) !important;
+  }
+  .filter-cell.filter-active {
+    background: rgba(163, 230, 53, 0.25) !important;
+    color: var(--cg-lime) !important;
+  }
+  /* Summary box for attendee list */
+  .summary-box {
+    background: rgba(0, 88, 45, 0.18);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .summary-box-title {
+    font-size: 0.75rem;
+    color: var(--cg-green-light);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .summary-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .summary-chip {
+    background: rgba(0, 184, 94, 0.12);
+    border: 1px solid var(--border-strong);
+    border-radius: 50px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    color: var(--cream);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .summary-chip b {
+    color: var(--cg-lime);
+    font-weight: 700;
+  }
+
+  /* Modal button styles */
+  .btn-primary, .btn-ghost {
+    padding: 9px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cg-green), var(--cg-green-light));
+    border: none;
+    color: white;
+  }
+  .btn-primary:hover { box-shadow: 0 4px 14px rgba(0, 184, 94, 0.4); }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--cream);
+  }
+  .btn-ghost:hover {
+    border-color: var(--cg-green-light);
+    background: rgba(0, 184, 94, 0.08);
+  }
+
+  /* ============== RESPONSIVE ============== */
+  @media (max-width: 1200px) {
+    .main-grid { grid-template-columns: 340px 1fr 300px; gap: 18px; padding: 18px; }
+    .slot-stage { max-width: 100%; }
+    .slot-name { font-size: 2rem; }
+  }
+  @media (max-width: 1024px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .winners-list, .prizes-list { max-height: 320px; }
+  }
+  @media (max-width: 768px) {
+    .topnav { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+    .nav-tabs { order: 3; width: 100%; justify-content: center; }
+    .main-grid { padding: 14px; gap: 14px; }
+    .stage { padding: 20px 14px; min-height: 480px; }
+    .slot-frame { padding: 24px 18px; }
+    .slot-reel { padding: 22px 16px; min-height: 110px; }
+    .slot-name { font-size: 1.5rem; }
+    .slot-id { font-size: 0.72rem; }
+    .spin-btn { padding: 14px 50px; font-size: 1rem; letter-spacing: 3px; }
+    .stage-title { font-size: 1.3rem; }
+    .upload-card { padding: 28px 20px; }
+    .upload-card h1 { font-size: 1.7rem; }
+    .upload-dropzone { padding: 30px 16px; }
+    .bottom-footer { flex-direction: column; text-align: center; }
+  }
+</style>
 </head>
 <body>
-    <!-- Background elements -->
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
 
-    <div class="app-container glass-panel">
-        <header>
-            <h1 class="gradient-text">✨ Vòng Quay May Mắn ✨</h1>
-            <nav class="tabs">
-                <button class="tab-btn active" data-tab="wheel-tab">Vòng Quay</button>
-                <button class="tab-btn" data-tab="players-tab">Người Chơi</button>
-                <button class="tab-btn" data-tab="prizes-tab">Quà Tặng</button>
-                <button class="tab-btn" data-tab="winners-tab">Giải Thưởng</button>
-            </nav>
-        </header>
+<div class="ambient" id="ambient"></div>
 
-        <main class="tab-content">
-            <!-- VÒNG QUAY TAB -->
-            <section id="wheel-tab" class="tab-pane active fade-in">
-                <div class="spin-screen-layout">
-                    <!-- Left Column: Prize Selection -->
-                    <div class="spin-left-panel glass-panel">
-                        <h3 class="panel-subtitle">Hãy chọn giải để quay</h3>
-                        <div class="prize-selection-list" id="prize-selection-list">
-                            <!-- Prizes populated here -->
-                        </div>
-                    </div>
+<!-- ============ UPLOAD OVERLAY ============ -->
+<div class="upload-screen" id="uploadScreen">
+  <div class="glow-orb"></div>
+  <div class="upload-card">
+    <div class="badge-tag">🌿 CARGILL · YEP 2025</div>
+    <h1>Hệ thống <span>Lucky Draw</span></h1>
+    <div class="subtitle">Tải file danh sách nhân viên để bắt đầu quay thưởng</div>
 
-                    <!-- Center Column: Animation Text -->
-                    <div class="spin-center-panel">
-                        <div class="animation-display glass-panel" id="animation-display">
-                            <span class="placeholder-text">SẴN SÀNG</span>
-                        </div>
-                    </div>
+    <label class="upload-dropzone" id="dropzone">
+      <input type="file" id="fileInput" accept=".xlsx,.xls">
+      <div class="ico-wrap">📊</div>
+      <div class="txt">Kéo & thả file Excel vào đây</div>
+      <div class="or-text">— hoặc —</div>
+      <div class="browse-btn">📁 CHỌN FILE TỪ MÁY</div>
+    </label>
 
-                    <!-- Right Column: Spin Button -->
-                    <div class="spin-right-panel">
-                        <button id="spin-btn" class="glow-btn huge-btn">QUAY</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- NGƯỜI CHƠI TAB -->
-            <section id="players-tab" class="tab-pane fade-in">
-                <h2>Danh sách người được quay</h2>
-                <div class="input-group">
-                    <label style="color: var(--text-secondary); font-size: 0.9rem;">Nhập thủ công (1 tên mỗi dòng hoặc cách nhau bằng dấu phẩy):</label>
-                    <textarea id="players-input" placeholder="Ví dụ: Nguyễn Văn A, Trần Văn B..." rows="3"></textarea>
-                    <button id="import-players-btn" class="primary-btn">Thêm Thủ Công</button>
-                    
-                    <hr style="border-color: rgba(255,255,255,0.1); margin: 0.5rem 0;">
-                    
-                    <label style="color: var(--text-secondary); font-size: 0.9rem;">Hoặc Upload File (Excel, CSV) chứa nhiều cột thông tin. Cột đầu tiên sẽ là Tên, các cột sau là thông tin kèm theo:</label>
-                    <input type="file" id="file-upload" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                </div>
-                <div class="stats">
-                    <p>Tổng số người chơi hiện tại: <span id="players-count" class="highlight">0</span></p>
-                </div>
-                <div class="list-container">
-                    <ul id="players-list" class="glass-list"></ul>
-                </div>
-            </section>
-
-            <!-- QUÀ TẶNG TAB -->
-            <section id="prizes-tab" class="tab-pane fade-in">
-                <h2>Danh sách quà tặng</h2>
-                <div class="input-group flex-group">
-                    <input type="text" id="prize-name" placeholder="Tên món quà...">
-                    <input type="number" id="prize-qty" placeholder="Số lượng" min="1" value="1">
-                    <button id="add-prize-btn" class="primary-btn">Thêm Quà</button>
-                </div>
-                <div class="stats">
-                    <p>Tổng số quà tặng còn lại: <span id="prizes-count" class="highlight">0</span></p>
-                </div>
-                <div class="list-container">
-                    <ul id="prizes-list" class="glass-list"></ul>
-                </div>
-            </section>
-
-            <!-- GIẢI THƯỞNG TAB -->
-            <section id="winners-tab" class="tab-pane fade-in">
-                <h2>Danh sách trúng giải</h2>
-                <div class="actions-group">
-                    <button id="export-csv-btn" class="primary-btn">Xuất CSV</button>
-                    <button id="clear-winners-btn" class="danger-btn">Xóa Lịch Sử</button>
-                    <button id="reset-all-btn" class="danger-btn">Reset Toàn Bộ (Mới lại từ đầu)</button>
-                </div>
-                <div class="table-container">
-                    <table id="winners-table">
-                        <thead>
-                            <tr>
-                                <th>Thời Gian</th>
-                                <th>Người Trúng</th>
-                                <th>Thông Tin Kèm Theo</th>
-                                <th>Phần Quà</th>
-                            </tr>
-                        </thead>
-                        <tbody id="winners-tbody">
-                            <!-- Winners will appear here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+    <div class="upload-requirements">
+      <div class="req-title">📋 YÊU CẦU FILE EXCEL</div>
+      <ul>
+        <li>Sheet <code>List_User</code>: chứa các cột <code>Draw_ID</code>, <code>Draw_Name</code>, <code>Draw_Dept</code>, <code>Draw_Location</code>, <code>Draw_Prize</code></li>
+        <li>Sheet <code>LIst_Prize</code>: chứa <code>Tên giải</code> và <code>Số lượng</code></li>
+        <li>Định dạng: <code>.xlsx</code> hoặc <code>.xls</code></li>
+      </ul>
     </div>
+  </div>
+</div>
 
-    <!-- Winner Modal -->
-    <div id="winner-modal" class="modal hidden">
-        <div class="modal-content glass-panel bounce-in">
-            <h2 class="gradient-text">🎉 CHÚC MỪNG 🎉</h2>
-            <p id="winner-name" class="winner-name-text">Tên Người Trúng</p>
-            <p>Đã nhận được phần quà:</p>
-            <p id="winner-prize" class="winner-prize-text">Tên Quà Tặng</p>
-            <button id="close-modal-btn" class="primary-btn mt-4">Tiếp Tục</button>
+<!-- ============ MAIN APP ============ -->
+<div class="app" id="app" style="display:none;">
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text">Year End Party 2025</div>
+    </div>
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-tab="wheel">Live Wheel</div>
+      <div class="nav-tab" data-tab="prizes">Prize Gallery</div>
+      <div class="nav-tab" data-tab="attendees">Attendee List</div>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="reuploadBtn" title="Tải file mới">📁</button>
+      <button class="icon-btn" id="bellBtn" title="Thông báo">🔔</button>
+      <button class="icon-btn avatar" title="Ban tổ chức">BTC</button>
+    </div>
+  </nav>
+
+  <!-- MAIN 3-COLUMN -->
+  <div class="main-grid">
+    <!-- LEFT: Winner Circle -->
+    <div class="col">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="h-icon">🏆</div>
+          <div>
+            <h2>Winner Circle</h2>
+            <small>Real-time updates</small>
+          </div>
         </div>
+        <!-- Slicer filter -->
+        <div class="winner-filter">
+          <label for="prizeFilter">🔍 Lọc theo giải</label>
+          <select id="prizeFilter">
+            <option value="__all__">Tất cả giải</option>
+          </select>
+        </div>
+        <div class="winners-list" id="winnersList">
+          <div class="empty-winners">Chưa có người trúng. Hãy bắt đầu quay!</div>
+        </div>
+        <button class="view-history-btn" id="historyBtn">
+          📋 View Full History
+        </button>
+      </div>
     </div>
 
-    <!-- Dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="script.js"></script>
+    <!-- CENTER: Stage -->
+    <div class="col">
+      <div class="stage">
+        <div class="stage-head">
+          <div class="stage-title" id="stageTitle">Chọn giải để bắt đầu</div>
+          <div class="stage-sub" id="stageSub">Hãy chọn một giải thưởng ở cột bên phải</div>
+        </div>
+
+        <div class="slot-stage">
+          <div class="slot-frame idle" id="slotFrame">
+            <span class="slot-corner-bl"></span>
+            <span class="slot-corner-br"></span>
+            <div class="slot-reel">
+              <div class="slot-name" id="slotName">🌿 Lucky Draw</div>
+              <div class="slot-id" id="slotId">Sẵn sàng quay thưởng</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="spin-btn" id="spinBtn" disabled>
+          <span>↻</span>
+          <span>SPIN NOW</span>
+        </button>
+
+        <div class="live-status">
+          <span class="dot"></span>
+          <span>LIVE EVENT CONNECTION SECURE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Prizes -->
+    <div class="col">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="h-icon">⚙️</div>
+          <div>
+            <h2>Quản lý Giải thưởng</h2>
+            <small>Bảng điều khiển ban tổ chức</small>
+          </div>
+        </div>
+        <div class="prizes-list" id="prizesList"></div>
+        <button class="stats-btn" id="statsBtn">
+          📊 Xem Thống kê
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM FOOTER -->
+  <div class="bottom-footer">
+    <div class="left">
+      <span>© 2025 <b>Cargill Vietnam</b></span>
+      <span>·</span>
+      <span>Tổng giải còn lại: <b id="totalRemaining">0</b></span>
+    </div>
+    <div class="right">
+      <span class="footer-link" id="exportBtn">📥 Xuất Excel</span>
+      <span class="footer-link" id="resetBtn">🔄 Reset</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Thông báo</h3>
+    <div id="modalBody"></div>
+    <div class="modal-actions" id="modalActions">
+      <button class="btn-ghost" onclick="closeModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================= STATE =============================
+let allUsers = [];
+let prizes = [];
+let selectedPrizeIdx = null;
+let drawing = false;
+let allWinners = [];
+
+// ============================= AMBIENT BG =============================
+(function initAmbient() {
+  const icons = ['🌿', '🍀', '✨', '🎊', '🏆', '🌱', '💚', '🎁'];
+  const wrap = document.getElementById('ambient');
+  for (let i = 0; i < 16; i++) {
+    const s = document.createElement('span');
+    s.textContent = icons[Math.floor(Math.random() * icons.length)];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 25 + 's';
+    s.style.animationDuration = (18 + Math.random() * 14) + 's';
+    wrap.appendChild(s);
+  }
+})();
+
+// ============================= MODAL =============================
+function showModal(title, body) {
+  document.getElementById('modalTitle').textContent = title;
+  const bodyEl = document.getElementById('modalBody');
+  bodyEl.innerHTML = '';
+  if (typeof body === 'string') {
+    bodyEl.innerHTML = `<p>${body}</p>`;
+  } else {
+    bodyEl.appendChild(body);
+  }
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target.id === 'modal') closeModal();
+});
+
+// ============================= UPLOAD =============================
+const dropzone = document.getElementById('dropzone');
+document.getElementById('fileInput').addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+// Drag & drop support
+['dragover', 'dragenter'].forEach(ev => {
+  dropzone.addEventListener(ev, (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dropzone.classList.add('dragover');
+  });
+});
+['dragleave', 'drop'].forEach(ev => {
+  dropzone.addEventListener(ev, (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dropzone.classList.remove('dragover');
+  });
+});
+dropzone.addEventListener('drop', (e) => {
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+document.getElementById('reuploadBtn').addEventListener('click', () => {
+  if (allWinners.length > 0) {
+    if (!confirm('Tải file mới sẽ xóa toàn bộ kết quả quay hiện tại. Tiếp tục?')) return;
+  }
+  // Reset state
+  allUsers = []; prizes = []; allWinners = [];
+  selectedPrizeIdx = null;
+  document.getElementById('uploadScreen').classList.remove('hidden');
+  document.getElementById('app').style.display = 'none';
+});
+
+async function handleFile(file) {
+  if (!file) return;
+  try {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf);
+
+    // Tolerant sheet name lookup (case-insensitive, normalize)
+    const findSheet = (target) => {
+      const t = target.toLowerCase().replace(/\s+/g, '');
+      return wb.SheetNames.find(s => s.toLowerCase().replace(/\s+/g, '') === t);
+    };
+
+    const userSheet = findSheet('List_User');
+    if (!userSheet) {
+      showModal('Lỗi', 'File phải có sheet tên <code>List_User</code>.<br>Các sheet đang có: ' + wb.SheetNames.join(', ')); return;
+    }
+
+    // Try common variants for the prize sheet name
+    const prizeSheet = findSheet('LIst_Prize') || findSheet('List_Prize') || findSheet('Prize');
+    if (!prizeSheet) {
+      showModal('Lỗi', 'File phải có sheet tên <code>LIst_Prize</code> (hoặc <code>List_Prize</code> / <code>Prize</code>).<br>Các sheet đang có: ' + wb.SheetNames.join(', ')); return;
+    }
+
+    const users = XLSX.utils.sheet_to_json(wb.Sheets[userSheet]);
+    const prizeRows = XLSX.utils.sheet_to_json(wb.Sheets[prizeSheet]);
+
+    allUsers = users
+      .filter(u => u.Draw_ID && u.Draw_Name)
+      .map(u => ({
+        Draw_ID: String(u.Draw_ID).trim(),
+        Draw_Name: String(u.Draw_Name).trim(),
+        Draw_Dept: String(u.Draw_Dept || '').trim(),
+        Draw_Location: String(u.Draw_Location || '').trim(),
+        AlreadyWon: u.Draw_Prize ? String(u.Draw_Prize).trim() : null
+      }));
+
+    // Prize column detection - support 'Tên giải' / 'Số lượng' or fallbacks
+    prizes = prizeRows
+      .filter(p => (p['Tên giải'] || p['Ten giai'] || p['Prize']) && (p['Số lượng'] !== undefined || p['So luong'] !== undefined || p['Quantity'] !== undefined))
+      .map(p => ({
+        name: String(p['Tên giải'] || p['Ten giai'] || p['Prize']).trim(),
+        quantity: parseInt(p['Số lượng'] || p['So luong'] || p['Quantity']),
+        value: p['Unnamed: 2'] || p['Giá trị'] || p['Value'] || '',
+        drawn: false,
+        winners: []
+      }));
+
+    if (allUsers.length === 0) {
+      showModal('Lỗi', 'Sheet List_User trống hoặc thiếu cột Draw_ID/Draw_Name.'); return;
+    }
+    if (prizes.length === 0) {
+      showModal('Lỗi', 'Sheet ' + prizeSheet + ' trống hoặc thiếu cột Tên giải/Số lượng.'); return;
+    }
+
+    // Apply pre-existing winners
+    allWinners = [];
+    const pre = {};
+    allUsers.forEach(u => {
+      if (u.AlreadyWon) {
+        if (!pre[u.AlreadyWon]) pre[u.AlreadyWon] = [];
+        pre[u.AlreadyWon].push(u);
+      }
+    });
+    prizes.forEach(p => {
+      if (pre[p.name]) {
+        p.winners = pre[p.name];
+        if (p.winners.length >= p.quantity) p.drawn = true;
+        p.winners.forEach(w => allWinners.push({ prize: p.name, user: w, time: null, preExisting: true }));
+      }
+    });
+
+    document.getElementById('uploadScreen').classList.add('hidden');
+    document.getElementById('app').style.display = 'flex';
+
+    renderPrizes();
+    populatePrizeFilter();
+    renderWinners();
+    updateTotalRemaining();
+  } catch (err) {
+    showModal('Lỗi đọc file', err.message);
+  }
+}
+
+// ============================= UPDATE COUNTERS =============================
+function updateTotalRemaining() {
+  const total = prizes.reduce((s, p) => s + Math.max(0, p.quantity - p.winners.length), 0);
+  document.getElementById('totalRemaining').textContent = total;
+}
+
+// ============================= RENDER PRIZES =============================
+function renderPrizes() {
+  const list = document.getElementById('prizesList');
+  list.innerHTML = '';
+  prizes.forEach((p, idx) => {
+    const item = document.createElement('div');
+    item.className = 'prize-item' + (p.drawn ? ' done' : '') + (selectedPrizeIdx === idx ? ' selected' : '');
+
+    let badge;
+    if (p.drawn) {
+      badge = '<span class="prize-badge done">✓ Đã trao</span>';
+    } else {
+      const remaining = p.quantity - p.winners.length;
+      badge = `<span class="prize-badge remaining">Còn lại ${remaining}</span>`;
+    }
+
+    const btnLabel = p.drawn
+      ? '✓ Đã hoàn thành'
+      : (selectedPrizeIdx === idx ? '✓ Đã chọn' : 'Chọn để quay');
+
+    item.innerHTML = `
+      <div class="prize-row1">
+        <div class="prize-name">${escapeHtml(p.name)}</div>
+        ${badge}
+      </div>
+      <button class="prize-btn" ${p.drawn || drawing ? 'disabled' : ''}>${btnLabel}</button>
+    `;
+    const btn = item.querySelector('.prize-btn');
+    btn.addEventListener('click', () => {
+      if (p.drawn || drawing) return;
+      selectedPrizeIdx = idx;
+      renderPrizes();
+      document.getElementById('spinBtn').disabled = false;
+      document.getElementById('stageTitle').textContent = p.name;
+      const remaining = p.quantity - p.winners.length;
+      document.getElementById('stageSub').textContent =
+        `Sẵn sàng quay · Còn ${remaining}/${p.quantity} suất${p.value ? ' · Giá trị: ' + p.value : ''}`;
+    });
+    list.appendChild(item);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================= DRAW LOGIC =============================
+function pickWinners(eligible, count) {
+  if (eligible.length === 0) return [];
+
+  const byLocation = {};
+  eligible.forEach(u => {
+    if (!byLocation[u.Draw_Location]) byLocation[u.Draw_Location] = [];
+    byLocation[u.Draw_Location].push(u);
+  });
+  const locations = Object.keys(byLocation);
+
+  const locationPools = {};
+  locations.forEach(loc => {
+    const byDept = {};
+    byLocation[loc].forEach(u => {
+      if (!byDept[u.Draw_Dept]) byDept[u.Draw_Dept] = [];
+      byDept[u.Draw_Dept].push(u);
+    });
+    Object.values(byDept).forEach(arr => shuffle(arr));
+    locationPools[loc] = {
+      depts: shuffle(Object.keys(byDept)),
+      byDept,
+      deptIdx: 0
+    };
+  });
+
+  shuffle(locations);
+
+  const winners = [];
+  let locIdx = 0;
+  let safety = count * Math.max(locations.length, 1) * 10;
+
+  while (winners.length < count && safety-- > 0) {
+    const loc = locations[locIdx % locations.length];
+    const pool = locationPools[loc];
+    let found = null;
+    for (let i = 0; i < pool.depts.length; i++) {
+      const dept = pool.depts[pool.deptIdx % pool.depts.length];
+      pool.deptIdx++;
+      if (pool.byDept[dept].length > 0) {
+        found = pool.byDept[dept].pop();
+        break;
+      }
+    }
+    if (found) winners.push(found);
+    locIdx++;
+
+    const totalLeft = locations.reduce((s, l) =>
+      s + Object.values(locationPools[l].byDept).reduce((a, b) => a + b.length, 0), 0);
+    if (totalLeft === 0) break;
+  }
+  return winners;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+// ============================= SPIN =============================
+document.getElementById('spinBtn').addEventListener('click', startDraw);
+
+async function startDraw() {
+  if (selectedPrizeIdx === null || drawing) return;
+  const prize = prizes[selectedPrizeIdx];
+  if (prize.drawn) return;
+
+  const wonIds = new Set();
+  prizes.forEach(p => p.winners.forEach(w => wonIds.add(w.Draw_ID)));
+  allUsers.forEach(u => { if (u.AlreadyWon) wonIds.add(u.Draw_ID); });
+  const eligible = allUsers.filter(u => !wonIds.has(u.Draw_ID));
+
+  if (eligible.length === 0) {
+    showModal('Hết người', 'Không còn nhân viên nào đủ điều kiện quay thưởng.');
+    return;
+  }
+
+  const slotsLeft = prize.quantity - prize.winners.length;
+  const winners = pickWinners(eligible, slotsLeft);
+
+  drawing = true;
+  document.getElementById('spinBtn').disabled = true;
+  renderPrizes();
+
+  const slotFrame = document.getElementById('slotFrame');
+  const slotName = document.getElementById('slotName');
+  const slotId = document.getElementById('slotId');
+
+  document.getElementById('stageTitle').textContent = '🎰 Đang quay...';
+  document.getElementById('stageSub').textContent = prize.name;
+
+  // Start slot machine
+  slotFrame.classList.remove('idle');
+  slotFrame.classList.add('spinning', 'fast');
+
+  // === Phase 1: FAST name flicker (2.5s) ===
+  let flickerInterval = setInterval(() => {
+    const r = eligible[Math.floor(Math.random() * eligible.length)];
+    slotName.textContent = r.Draw_Name;
+    slotId.textContent = r.Draw_ID + ' · ' + r.Draw_Location;
+  }, 40);
+
+  await sleep(2500);
+  clearInterval(flickerInterval);
+
+  // === Phase 2: SLOWER name roll (~2s) ===
+  slotFrame.classList.remove('fast');
+  slotFrame.classList.add('slow');
+
+  const slowSteps = [120, 150, 180, 220, 280, 340, 420, 520];
+  for (const interval of slowSteps) {
+    const r = eligible[Math.floor(Math.random() * eligible.length)];
+    slotName.textContent = r.Draw_Name;
+    slotId.textContent = r.Draw_ID + ' · ' + r.Draw_Location;
+    await sleep(interval);
+  }
+  slotFrame.classList.remove('slow', 'spinning');
+
+  // === Phase 3: Reveal winners one by one ===
+  for (let i = 0; i < winners.length; i++) {
+    const w = winners[i];
+    prize.winners.push(w);
+    allWinners.push({ prize: prize.name, user: w, time: new Date() });
+
+    // Land on the actual winner
+    slotName.textContent = w.Draw_Name;
+    slotId.textContent = w.Draw_ID + ' · ' + w.Draw_Dept + ' · ' + w.Draw_Location;
+
+    // Confetti burst
+    confetti({
+      particleCount: 130,
+      spread: 95,
+      origin: { y: 0.5 },
+      colors: ['#008544', '#00b85e', '#a3e635', '#4ade80', '#f0fdf4']
+    });
+
+    document.getElementById('stageTitle').textContent = `🎉 ${w.Draw_Name}`;
+    document.getElementById('stageSub').textContent =
+      `${w.Draw_ID} · ${w.Draw_Dept} · ${w.Draw_Location}`;
+
+    populatePrizeFilter();
+    renderWinners(true);
+    updateTotalRemaining();
+
+    // If more winners, do another quick flicker between reveals
+    if (i < winners.length - 1) {
+      const pauseTime = winners.length > 20 ? 350 : (winners.length > 10 ? 600 : 900);
+      await sleep(pauseTime);
+
+      slotFrame.classList.add('spinning', 'fast');
+      const quickFlicker = setInterval(() => {
+        const r = eligible[Math.floor(Math.random() * eligible.length)];
+        slotName.textContent = r.Draw_Name;
+        slotId.textContent = r.Draw_ID;
+      }, 45);
+      const flickerDur = winners.length > 20 ? 450 : (winners.length > 10 ? 650 : 850);
+      await sleep(flickerDur);
+      clearInterval(quickFlicker);
+      slotFrame.classList.remove('fast', 'spinning');
+    }
+  }
+
+  // Final celebration
+  fireBigConfetti();
+
+  // Return frame to idle state
+  await sleep(1500);
+  slotFrame.classList.add('idle');
+
+  prize.drawn = true;
+  drawing = false;
+  selectedPrizeIdx = null;
+
+  document.getElementById('stageTitle').textContent = `✅ Hoàn tất: ${prize.name}`;
+  document.getElementById('stageSub').textContent = `${winners.length} người trúng thưởng`;
+
+  renderPrizes();
+  updateTotalRemaining();
+}
+
+function fireBigConfetti() {
+  const duration = 2500;
+  const end = Date.now() + duration;
+  const colors = ['#008544', '#00b85e', '#a3e635', '#4ade80'];
+  (function frame() {
+    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors });
+    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+}
+
+// ============================= RENDER WINNERS LIST =============================
+function renderWinners(highlightLast) {
+  const list = document.getElementById('winnersList');
+  if (allWinners.length === 0) {
+    list.innerHTML = '<div class="empty-winners">Chưa có người trúng. Hãy bắt đầu quay!</div>';
+    return;
+  }
+
+  // Get filter value
+  const filterSel = document.getElementById('prizeFilter');
+  const filterValue = filterSel ? filterSel.value : '__all__';
+
+  // Group winners by prize, preserving prize order from when they were drawn.
+  // Each prize keeps internal order (STT 1+) as drawn.
+  const groupOrder = []; // array of prize names, in draw order
+  const groups = {};     // prize -> [winner1, winner2, ...]
+  allWinners.forEach(w => {
+    if (!groups[w.prize]) {
+      groups[w.prize] = [];
+      groupOrder.push(w.prize);
+    }
+    groups[w.prize].push(w);
+  });
+
+  // Build display order: latest prize at TOP, but within each prize STT from 1 ascending
+  const displayOrder = [...groupOrder].reverse(); // newest drawn prize first
+
+  // Apply filter
+  const filteredOrder = filterValue === '__all__'
+    ? displayOrder
+    : displayOrder.filter(name => name === filterValue);
+
+  if (filteredOrder.length === 0) {
+    list.innerHTML = '<div class="empty-winners">Không có dữ liệu cho giải này.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  filteredOrder.forEach((prizeName, groupIdx) => {
+    const winners = groups[prizeName];
+    // Group header
+    const header = document.createElement('div');
+    header.className = 'winner-group-header' + (groupIdx === 0 ? ' first' : '');
+    header.innerHTML = `
+      <span title="${escapeHtml(prizeName)}">${escapeHtml(prizeName)}</span>
+      <span class="grp-count">${winners.length}</span>
+    `;
+    list.appendChild(header);
+
+    // Winners within this prize - STT from 1
+    const lastGlobalIdx = allWinners.length - 1;
+    winners.forEach((w, idx) => {
+      const stt = idx + 1;
+      // Highlight if this is the very last winner added
+      const isLatest = highlightLast && allWinners.indexOf(w) === lastGlobalIdx;
+      const row = document.createElement('div');
+      row.className = 'winner-row' + (isLatest ? ' latest' : '');
+      const initials = w.user.Draw_Name.split(' ').slice(-2).map(s => s[0] || '').join('').toUpperCase();
+      row.innerHTML = `
+        <div class="winner-stt">${stt}</div>
+        <div class="winner-avatar">${escapeHtml(initials)}</div>
+        <div class="winner-info">
+          <div class="name" title="${escapeHtml(w.user.Draw_Name)} (${escapeHtml(w.user.Draw_ID)})">
+            ${escapeHtml(w.user.Draw_Name)}
+            <span class="winner-id">${escapeHtml(w.user.Draw_ID)}</span>
+          </div>
+          <div class="prize" title="${escapeHtml(w.user.Draw_Dept)} · ${escapeHtml(w.user.Draw_Location)}">
+            ${escapeHtml(w.user.Draw_Dept)} · ${escapeHtml(w.user.Draw_Location)}
+          </div>
+        </div>
+      `;
+      row.style.animationDelay = Math.min(idx * 0.025, 0.3) + 's';
+      list.appendChild(row);
+    });
+  });
+
+  // Auto-scroll to top so latest prize header is visible
+  if (highlightLast) {
+    requestAnimationFrame(() => {
+      list.scrollTop = 0;
+    });
+  }
+}
+
+// ============================= POPULATE PRIZE FILTER =============================
+function populatePrizeFilter() {
+  const sel = document.getElementById('prizeFilter');
+  if (!sel) return;
+  const prevValue = sel.value;
+
+  // Get prizes that have at least one winner, in draw order
+  const drawnPrizes = [];
+  const seen = new Set();
+  allWinners.forEach(w => {
+    if (!seen.has(w.prize)) {
+      seen.add(w.prize);
+      drawnPrizes.push(w.prize);
+    }
+  });
+
+  sel.innerHTML = '<option value="__all__">Tất cả giải</option>' +
+    drawnPrizes.map(p => {
+      const count = allWinners.filter(w => w.prize === p).length;
+      return `<option value="${escapeHtmlAttr(p)}">${escapeHtmlAttr(p)} (${count})</option>`;
+    }).join('');
+
+  // Restore previous selection if still valid
+  if (prevValue && [...sel.options].some(o => o.value === prevValue)) {
+    sel.value = prevValue;
+  } else {
+    sel.value = '__all__';
+  }
+}
+
+function escapeHtmlAttr(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================= HISTORY MODAL =============================
+document.getElementById('historyBtn').addEventListener('click', () => {
+  if (allWinners.length === 0) {
+    showModal('Chưa có dữ liệu', 'Chưa có ai trúng thưởng.');
+    return;
+  }
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <p>Tổng số người trúng: <b style="color:var(--cg-green-light)">${allWinners.length}</b></p>
+    <div class="history-table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr><th>STT</th><th>Giải</th><th>ID</th><th>Họ tên</th><th>Phòng ban</th><th>Địa điểm</th></tr>
+        </thead>
+        <tbody>
+          ${allWinners.map((w, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${escapeHtml(w.prize)}</td>
+              <td>${escapeHtml(w.user.Draw_ID)}</td>
+              <td>${escapeHtml(w.user.Draw_Name)}</td>
+              <td>${escapeHtml(w.user.Draw_Dept)}</td>
+              <td>${escapeHtml(w.user.Draw_Location)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  showModal('📋 Lịch sử trúng thưởng', wrap);
+});
+
+// ============================= PRIZE FAMILY HELPER =============================
+// Group prizes by removing the "- Lần X/Y" suffix
+// "Giải khuyến khích - Lần 1/4" → "Giải khuyến khích"
+function getPrizeFamily(prizeName) {
+  // Strip variants of " - Lần X/Y", " - Lần X", "(Lần X/Y)" at end
+  return String(prizeName)
+    .replace(/\s*[-–—]\s*Lần\s*\d+\s*(\/\s*\d+)?\s*$/i, '')
+    .replace(/\s*\(\s*Lần\s*\d+\s*(\/\s*\d+)?\s*\)\s*$/i, '')
+    .trim();
+}
+
+// ============================= STATS MODAL =============================
+// Cross-filter state: which location/dept/family is currently selected
+let statsFilter = { location: null, dept: null, family: null };
+
+document.getElementById('statsBtn').addEventListener('click', () => {
+  statsFilter = { location: null, dept: null, family: null };
+  openStatsModal();
+});
+
+function openStatsModal() {
+  const wrap = document.createElement('div');
+  wrap.id = 'statsBody';
+  showModal('📊 Thống kê chi tiết', wrap);
+  renderStats();
+}
+
+function renderStats() {
+  const container = document.getElementById('statsBody');
+  if (!container) return;
+
+  const totalUsers = allUsers.length;
+  const wonCount = allWinners.length;
+  const remaining = prizes.reduce((s, p) => s + Math.max(0, p.quantity - p.winners.length), 0);
+  const locations = [...new Set(allUsers.map(u => u.Draw_Location))].sort();
+  const depts = [...new Set(allUsers.map(u => u.Draw_Dept))].sort();
+  const completedPrizes = prizes.filter(p => p.drawn).length;
+
+  // Apply filter to allWinners → filtered subset
+  const f = statsFilter;
+  const filteredWinners = allWinners.filter(w => {
+    if (f.location && w.user.Draw_Location !== f.location) return false;
+    if (f.dept && w.user.Draw_Dept !== f.dept) return false;
+    if (f.family && getPrizeFamily(w.prize) !== f.family) return false;
+    return true;
+  });
+  const isFiltered = f.location || f.dept || f.family;
+
+  // --- Group prizes by family (uses ALL prizes for the family list, but counts use filteredWinners) ---
+  const families = {};
+  const familyOrder = [];
+  prizes.forEach(p => {
+    const fam = getPrizeFamily(p.name);
+    if (!families[fam]) {
+      families[fam] = {
+        name: fam,
+        totalQuantity: 0,
+        totalWon: 0,
+        totalWonFiltered: 0,
+        drawnFully: 0,
+        totalPrizesInFamily: 0,
+        byLocation: {},
+        sources: []
+      };
+      familyOrder.push(fam);
+      locations.forEach(l => families[fam].byLocation[l] = 0);
+    }
+    const F = families[fam];
+    F.totalQuantity += p.quantity;
+    F.totalWon += p.winners.length;
+    F.totalPrizesInFamily += 1;
+    if (p.drawn) F.drawnFully += 1;
+    F.sources.push(p.name);
+  });
+  // Now apply filtered counts
+  filteredWinners.forEach(w => {
+    const fam = getPrizeFamily(w.prize);
+    if (families[fam]) {
+      families[fam].totalWonFiltered += 1;
+      families[fam].byLocation[w.user.Draw_Location] =
+        (families[fam].byLocation[w.user.Draw_Location] || 0) + 1;
+    }
+  });
+
+  // --- Aggregate filtered winners by Location ---
+  const winnersByLocation = {};
+  locations.forEach(l => winnersByLocation[l] = 0);
+  filteredWinners.forEach(w => {
+    winnersByLocation[w.user.Draw_Location] = (winnersByLocation[w.user.Draw_Location] || 0) + 1;
+  });
+
+  // --- Aggregate filtered winners by Dept ---
+  const winnersByDept = {};
+  filteredWinners.forEach(w => {
+    winnersByDept[w.user.Draw_Dept] = (winnersByDept[w.user.Draw_Dept] || 0) + 1;
+  });
+
+  // ===== Build HTML =====
+  let html = '';
+
+  // Filter chips bar
+  if (isFiltered) {
+    const chips = [];
+    if (f.location) chips.push({ type: 'location', value: f.location, label: '📍 Location: ' + f.location });
+    if (f.dept) chips.push({ type: 'dept', value: f.dept, label: '🏢 Department: ' + f.dept });
+    if (f.family) chips.push({ type: 'family', value: f.family, label: '🎁 Nhóm giải: ' + f.family });
+    html += `
+      <div class="stats-filter-bar">
+        <div class="stats-filter-label">🔗 Đang lọc:</div>
+        ${chips.map(c => `
+          <span class="stats-filter-chip" data-clear-type="${c.type}">
+            ${escapeHtml(c.label)} <span class="chip-x">✕</span>
+          </span>
+        `).join('')}
+        <button class="stats-clear-all">Xóa tất cả</button>
+      </div>
+    `;
+  }
+
+  // Overview cards
+  html += `
+    <div class="stats-grid">
+      <div class="stat-card"><div class="num">${totalUsers}</div><div class="lbl">Tổng nhân viên</div></div>
+      <div class="stat-card"><div class="num">${filteredWinners.length}${isFiltered ? '<span class="stat-of">/' + wonCount + '</span>' : ''}</div><div class="lbl">${isFiltered ? 'Đã trúng (lọc)' : 'Đã trúng'}</div></div>
+      <div class="stat-card"><div class="num">${remaining}</div><div class="lbl">Còn lại</div></div>
+      <div class="stat-card"><div class="num">${completedPrizes}/${prizes.length}</div><div class="lbl">Giải hoàn tất</div></div>
+      <div class="stat-card"><div class="num">${locations.length}</div><div class="lbl">Locations</div></div>
+      <div class="stat-card"><div class="num">${depts.length}</div><div class="lbl">Departments</div></div>
+    </div>
+  `;
+
+  // === Tổng kết theo nhóm giải ===
+  html += `
+    <h4 class="stats-section-title">🎁 Tổng kết theo nhóm giải <span class="hint">— click để lọc</span></h4>
+    <div class="history-table-wrap" style="max-height: 250px;">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Nhóm giải</th>
+            <th style="text-align:center;">Số lượt</th>
+            <th style="text-align:center;">Tổng giải</th>
+            <th style="text-align:center;">${isFiltered ? 'Đã trúng (lọc)' : 'Đã trúng'}</th>
+            <th style="text-align:center;">Còn lại</th>
+            <th style="text-align:center;">Tiến độ</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${familyOrder.map(famName => {
+            const F = families[famName];
+            const remain = F.totalQuantity - F.totalWon;
+            const displayWon = isFiltered ? F.totalWonFiltered : F.totalWon;
+            const pct = F.totalQuantity > 0 ? (F.totalWon / F.totalQuantity * 100).toFixed(0) : '0';
+            const isActive = f.family === famName;
+            return `
+              <tr class="filter-row ${isActive ? 'filter-active' : ''}" data-filter-type="family" data-filter-value="${escapeHtmlAttr(famName)}">
+                <td><b>${escapeHtml(famName)}</b></td>
+                <td style="text-align:center; color: var(--cream-dim);">${F.totalPrizesInFamily}</td>
+                <td style="text-align:center; font-weight: 700;">${F.totalQuantity}</td>
+                <td style="text-align:center; color: var(--cg-green-light); font-weight: 700;">${displayWon}</td>
+                <td style="text-align:center; color: ${remain > 0 ? 'var(--cg-lime)' : 'var(--cream-faint)'}; font-weight: 700;">${remain}</td>
+                <td style="text-align:center;">
+                  <div style="display:inline-flex; align-items:center; gap: 8px;">
+                    <div style="width: 60px; height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden;">
+                      <div style="width: ${pct}%; height: 100%; background: linear-gradient(90deg, var(--cg-green-light), var(--cg-lime));"></div>
+                    </div>
+                    <span style="font-size: 0.78rem; color: var(--cg-lime); font-weight: 700; min-width: 30px;">${pct}%</span>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  // === Cross-tab: Family × Location ===
+  if (wonCount > 0) {
+    html += `
+      <h4 class="stats-section-title">📍 Phân bổ nhóm giải theo Location <span class="hint">— click header hoặc cell để lọc</span></h4>
+      <div class="history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Nhóm giải</th>
+              ${locations.map(l => {
+                const isActive = f.location === l;
+                return `<th class="filter-th ${isActive ? 'filter-active' : ''}" data-filter-type="location" data-filter-value="${escapeHtmlAttr(l)}" style="text-align:center; cursor:pointer;">${escapeHtml(l)}</th>`;
+              }).join('')}
+              <th style="background: rgba(163, 230, 53, 0.15); text-align:center;">Tổng</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${familyOrder.filter(famName => families[famName].totalWon > 0).map(famName => {
+              const F = families[famName];
+              const famActive = f.family === famName;
+              return `
+                <tr class="${famActive ? 'filter-active-row' : ''}">
+                  <td class="filter-cell ${famActive ? 'filter-active' : ''}" data-filter-type="family" data-filter-value="${escapeHtmlAttr(famName)}" style="cursor:pointer;"><b>${escapeHtml(famName)}</b></td>
+                  ${locations.map(l => {
+                    const n = F.byLocation[l] || 0;
+                    const cellActive = f.location === l || famActive;
+                    if (n === 0) {
+                      return `<td style="text-align:center; color: var(--cream-faint);">-</td>`;
+                    }
+                    return `<td class="filter-cell" data-filter-type="loc-family" data-filter-loc="${escapeHtmlAttr(l)}" data-filter-fam="${escapeHtmlAttr(famName)}" style="text-align:center; cursor:pointer; color: var(--cg-green-light); font-weight: 700;${cellActive ? 'background: rgba(163, 230, 53, 0.12);' : ''}">${n}</td>`;
+                  }).join('')}
+                  <td style="text-align:center; background: rgba(163, 230, 53, 0.08); color: var(--cg-lime); font-weight: 700;">${isFiltered ? F.totalWonFiltered : F.totalWon}</td>
+                </tr>
+              `;
+            }).join('')}
+            <tr style="background: rgba(0, 184, 94, 0.12);">
+              <td style="font-weight: 700; color: var(--cg-lime);">TỔNG</td>
+              ${locations.map(l => {
+                const isActive = f.location === l;
+                return `<td class="filter-cell ${isActive ? 'filter-active' : ''}" data-filter-type="location" data-filter-value="${escapeHtmlAttr(l)}" style="text-align:center; cursor:pointer; font-weight: 700; color: var(--cg-lime);">${winnersByLocation[l] || 0}</td>`;
+              }).join('')}
+              <td style="text-align:center; font-weight: 800; color: var(--cg-lime); background: rgba(163, 230, 53, 0.18);">${filteredWinners.length}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // === Top Departments ===
+    const sortedDepts = Object.entries(winnersByDept).sort((a, b) => b[1] - a[1]);
+    html += `
+      <h4 class="stats-section-title">🏢 Số người trúng theo Department${isFiltered ? ' (sau khi lọc)' : ' (Top 15)'} <span class="hint">— click để lọc</span></h4>
+      <div class="history-table-wrap" style="max-height: 320px;">
+        <table class="history-table">
+          <thead>
+            <tr><th>Department</th><th style="text-align:center;">Tổng nhân viên</th><th style="text-align:center;">${isFiltered ? 'Đã trúng (lọc)' : 'Đã trúng'}</th><th style="text-align:center;">Tỉ lệ</th></tr>
+          </thead>
+          <tbody>
+            ${sortedDepts.slice(0, isFiltered ? sortedDepts.length : 15).map(([dept, n]) => {
+              const totalInDept = allUsers.filter(u => u.Draw_Dept === dept).length;
+              const ratio = totalInDept > 0 ? (n / totalInDept * 100).toFixed(1) : '0.0';
+              const isActive = f.dept === dept;
+              return `
+                <tr class="filter-row ${isActive ? 'filter-active' : ''}" data-filter-type="dept" data-filter-value="${escapeHtmlAttr(dept)}">
+                  <td><b>${escapeHtml(dept)}</b></td>
+                  <td style="text-align:center; color: var(--cream-dim);">${totalInDept}</td>
+                  <td style="text-align:center; color: var(--cg-green-light); font-weight: 700;">${n}</td>
+                  <td style="text-align:center; color: var(--cg-lime);">${ratio}%</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // === Filtered winner detail list (only when filtered) ===
+    if (isFiltered) {
+      html += `
+        <h4 class="stats-section-title">👤 Danh sách trúng thưởng (theo bộ lọc)</h4>
+        <div class="history-table-wrap" style="max-height: 320px;">
+          <table class="history-table">
+            <thead>
+              <tr><th>STT</th><th>Giải</th><th>ID</th><th>Họ tên</th><th>Phòng ban</th><th>Địa điểm</th></tr>
+            </thead>
+            <tbody>
+              ${filteredWinners.length === 0
+                ? '<tr><td colspan="6" style="text-align:center; color: var(--cream-faint); font-style: italic; padding: 20px;">Không có dữ liệu khớp bộ lọc.</td></tr>'
+                : filteredWinners.map((w, i) => `
+                    <tr>
+                      <td>${i + 1}</td>
+                      <td>${escapeHtml(w.prize)}</td>
+                      <td>${escapeHtml(w.user.Draw_ID)}</td>
+                      <td><b>${escapeHtml(w.user.Draw_Name)}</b></td>
+                      <td>${escapeHtml(w.user.Draw_Dept)}</td>
+                      <td>${escapeHtml(w.user.Draw_Location)}</td>
+                    </tr>
+                  `).join('')
+              }
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  } else {
+    html += `<p style="margin-top: 20px; text-align: center; color: var(--cream-faint); font-style: italic;">Chưa có dữ liệu trúng thưởng để thống kê.</p>`;
+  }
+
+  container.innerHTML = html;
+
+  // ===== Wire up click handlers =====
+  // Filter rows (family rows, dept rows)
+  container.querySelectorAll('.filter-row, .filter-th, .filter-cell').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const type = el.dataset.filterType;
+      if (type === 'family') {
+        statsFilter.family = statsFilter.family === el.dataset.filterValue ? null : el.dataset.filterValue;
+      } else if (type === 'location') {
+        statsFilter.location = statsFilter.location === el.dataset.filterValue ? null : el.dataset.filterValue;
+      } else if (type === 'dept') {
+        statsFilter.dept = statsFilter.dept === el.dataset.filterValue ? null : el.dataset.filterValue;
+      } else if (type === 'loc-family') {
+        // Cross-tab cell: set both location AND family
+        const loc = el.dataset.filterLoc;
+        const fam = el.dataset.filterFam;
+        // Toggle: if both already set to these values, clear them
+        if (statsFilter.location === loc && statsFilter.family === fam) {
+          statsFilter.location = null;
+          statsFilter.family = null;
+        } else {
+          statsFilter.location = loc;
+          statsFilter.family = fam;
+        }
+      }
+      renderStats();
+    });
+  });
+
+  // Clear individual chip
+  container.querySelectorAll('.stats-filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const t = chip.dataset.clearType;
+      if (t === 'location') statsFilter.location = null;
+      else if (t === 'dept') statsFilter.dept = null;
+      else if (t === 'family') statsFilter.family = null;
+      renderStats();
+    });
+  });
+
+  // Clear all
+  const clearAll = container.querySelector('.stats-clear-all');
+  if (clearAll) {
+    clearAll.addEventListener('click', () => {
+      statsFilter = { location: null, dept: null, family: null };
+      renderStats();
+    });
+  }
+}
+
+// ============================= EXPORT =============================
+document.getElementById('exportBtn').addEventListener('click', () => {
+  if (allWinners.length === 0) {
+    showModal('Chưa có dữ liệu', 'Chưa có ai trúng thưởng để xuất.');
+    return;
+  }
+  const rows = [['STT', 'Giải', 'Draw_ID', 'Draw_Name', 'Draw_Dept', 'Draw_Location']];
+  allWinners.forEach((w, i) => {
+    rows.push([i + 1, w.prize, w.user.Draw_ID, w.user.Draw_Name, w.user.Draw_Dept, w.user.Draw_Location]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:6},{wch:30},{wch:14},{wch:30},{wch:25},{wch:18}];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'All Winners');
+
+  prizes.forEach(p => {
+    if (p.winners.length > 0) {
+      const prows = [['STT', 'Draw_ID', 'Draw_Name', 'Draw_Dept', 'Draw_Location']];
+      p.winners.forEach((w, i) => {
+        prows.push([i + 1, w.Draw_ID, w.Draw_Name, w.Draw_Dept, w.Draw_Location]);
+      });
+      const pws = XLSX.utils.aoa_to_sheet(prows);
+      pws['!cols'] = [{wch:6},{wch:14},{wch:30},{wch:25},{wch:18}];
+      const safe = p.name.replace(/[\\\/\?\*\[\]:]/g, '_').substring(0, 31);
+      XLSX.utils.book_append_sheet(wb, pws, safe);
+    }
+  });
+
+  const now = new Date();
+  const fname = `Cargill_LuckyDraw_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}.xlsx`;
+  XLSX.writeFile(wb, fname);
+});
+
+// ============================= RESET =============================
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Reset toàn bộ kết quả quay? (Sẽ giữ lại winner đã có sẵn trong file gốc)')) return;
+  prizes.forEach(p => { p.drawn = false; p.winners = []; });
+  allWinners = [];
+
+  const pre = {};
+  allUsers.forEach(u => {
+    if (u.AlreadyWon) {
+      if (!pre[u.AlreadyWon]) pre[u.AlreadyWon] = [];
+      pre[u.AlreadyWon].push(u);
+    }
+  });
+  prizes.forEach(p => {
+    if (pre[p.name]) {
+      p.winners = pre[p.name];
+      if (p.winners.length >= p.quantity) p.drawn = true;
+      p.winners.forEach(w => allWinners.push({ prize: p.name, user: w, time: null, preExisting: true }));
+    }
+  });
+
+  selectedPrizeIdx = null;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('stageTitle').textContent = 'Chọn giải để bắt đầu';
+  document.getElementById('stageSub').textContent = 'Hãy chọn một giải thưởng ở cột bên phải';
+  // Reset slot machine to idle
+  const slotFrame = document.getElementById('slotFrame');
+  slotFrame.classList.remove('spinning', 'fast', 'slow');
+  slotFrame.classList.add('idle');
+  document.getElementById('slotName').textContent = '🌿 Lucky Draw';
+  document.getElementById('slotId').textContent = 'Sẵn sàng quay thưởng';
+  renderPrizes();
+  populatePrizeFilter();
+  renderWinners();
+  updateTotalRemaining();
+});
+
+// Prize filter change listener
+document.getElementById('prizeFilter').addEventListener('change', () => {
+  renderWinners(false);
+});
+
+// Nav tabs (just visual for now, all show wheel)
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const which = tab.dataset.tab;
+    if (which === 'prizes') {
+      // Show prize gallery
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead><tr><th>Giải</th><th>Số lượng</th><th>Giá trị</th><th>Trạng thái</th><th>Đã trúng</th></tr></thead>
+            <tbody>
+              ${prizes.map(p => `
+                <tr>
+                  <td><b>${escapeHtml(p.name)}</b></td>
+                  <td>${p.quantity}</td>
+                  <td>${escapeHtml(String(p.value || '-'))}</td>
+                  <td>${p.drawn ? '<span style="color:var(--cream-faint)">✓ Đã trao</span>' : '<span style="color:var(--cg-green-light)">Chưa trao</span>'}</td>
+                  <td>${p.winners.length}/${p.quantity}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      showModal('🎁 Prize Gallery', wrap);
+      tab.classList.remove('active');
+      document.querySelector('.nav-tab[data-tab="wheel"]').classList.add('active');
+    } else if (which === 'attendees') {
+      const wonIds = new Set();
+      prizes.forEach(p => p.winners.forEach(w => wonIds.add(w.Draw_ID)));
+      const eligibleCount = allUsers.filter(u => !u.AlreadyWon && !wonIds.has(u.Draw_ID)).length;
+
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+        <div class="stats-grid" style="margin-bottom: 16px;">
+          <div class="stat-card"><div class="num">${allUsers.length}</div><div class="lbl">Tổng nhân viên</div></div>
+          <div class="stat-card"><div class="num">${eligibleCount}</div><div class="lbl">Đủ điều kiện</div></div>
+          <div class="stat-card"><div class="num">${allUsers.length - eligibleCount}</div><div class="lbl">Đã trúng</div></div>
+        </div>
+
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead><tr><th>STT</th><th>ID</th><th>Họ tên</th><th>Phòng ban</th><th>Địa điểm</th><th>Trạng thái</th></tr></thead>
+            <tbody>
+              ${allUsers.map((u, i) => {
+                const hasWon = u.AlreadyWon || wonIds.has(u.Draw_ID);
+                return `
+                  <tr>
+                    <td>${i + 1}</td>
+                    <td>${escapeHtml(u.Draw_ID)}</td>
+                    <td><b>${escapeHtml(u.Draw_Name)}</b></td>
+                    <td>${escapeHtml(u.Draw_Dept)}</td>
+                    <td>${escapeHtml(u.Draw_Location)}</td>
+                    <td>${hasWon ? '<span style="color:var(--cream-faint)">✓ Đã trúng</span>' : '<span style="color:var(--cg-green-light); font-weight: 700;">Còn ĐK</span>'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      showModal('👥 Attendee List', wrap);
+      tab.classList.remove('active');
+      document.querySelector('.nav-tab[data-tab="wheel"]').classList.add('active');
+    }
+  });
+});
+
+</script>
 </body>
 </html>
